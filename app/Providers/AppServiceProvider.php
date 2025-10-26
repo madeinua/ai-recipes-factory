@@ -20,9 +20,8 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(RecipeRepository::class, EloquentRecipeRepository::class);
         $this->app->bind(RecipeRequestRepository::class, EloquentRecipeRequestRepository::class);
-
         $this->app->bind(AiRecipeGenerator::class, function () {
-            $driver = env('AI_DRIVER', 'fake');
+            $driver = env('AI_DRIVER', 'openai');
 
             return match ($driver) {
                 'openai' => $this->app->make(OpenAiRecipeGenerator::class),

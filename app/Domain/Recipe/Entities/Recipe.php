@@ -18,7 +18,7 @@ final readonly class Recipe
      * @param \DateTimeImmutable $createdAt
      * @param \DateTimeImmutable $updatedAt
      */
-    private function __construct(
+    public function __construct(
         public string $id,
         public string $title,
         public ?string $excerpt,
@@ -30,42 +30,14 @@ final readonly class Recipe
         public \DateTimeImmutable $createdAt,
         public \DateTimeImmutable $updatedAt,
     ) {
+        $this->assertValid();
     }
 
-    /**
-     * @param string $id
-     * @param string $title
-     * @param string|null $excerpt
-     * @param array $instructions
-     * @param int $numberOfPersons
-     * @param int $timeToCook
-     * @param int $timeToPrepare
-     * @param array $ingredients
-     * @param \DateTimeImmutable $createdAt
-     * @param \DateTimeImmutable $updatedAt
-     * @return self
-     */
-    public static function create(
-        string $id,
-        string $title,
-        ?string $excerpt,
-        array $instructions,
-        int $numberOfPersons,
-        int $timeToCook,
-        int $timeToPrepare,
-        array $ingredients,
-        \DateTimeImmutable $createdAt,
-        \DateTimeImmutable $updatedAt,
-    ): self {
-        if ($title === '' || $numberOfPersons < 1 || $timeToCook < 0 || $timeToPrepare < 0) {
+    private function assertValid()
+    {
+        if ($this->title === '' || $this->numberOfPersons < 1 || $this->timeToCook < 0 || $this->timeToPrepare < 0) {
             throw new \InvalidArgumentException('Invalid recipe primitives.');
         }
-
-        return new self(
-            $id, $title, $excerpt, array_values($instructions),
-            $numberOfPersons, $timeToCook, $timeToPrepare,
-            $ingredients, $createdAt, $updatedAt
-        );
     }
 
     /**

@@ -18,6 +18,8 @@ interface RecipeRequestRepository
 
     public function findCompletedByIngredients(string $rawIngredientsCsv): ?RecipeRequest;
 
+    public function findCompletedByHash(string $hash): ?RecipeRequest;
+
     public function existsActiveByHash(string $hash, ?string $excludeRequestId = null): bool;
 
     public function markAllByHashCompleted(string $hash, string $recipeId): int;

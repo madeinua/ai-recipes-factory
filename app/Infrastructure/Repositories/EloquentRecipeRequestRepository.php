@@ -31,12 +31,11 @@ final class EloquentRecipeRequestRepository implements RecipeRequestRepository
     public function createPending(string $ingredientsCsv, ?string $webhookUrl = null): string
     {
         $id = (string) Str::uuid();
-        $hash = IngredientsHelper::hash($ingredientsCsv);
 
         $m = new RequestModel();
         $m->id = $id;
         $m->ingredients_csv = $ingredientsCsv;
-        $m->ingredients_hash = $hash;
+        $m->ingredients_hash = IngredientsHelper::hash($ingredientsCsv);
         $m->status = RecipeRequestStatus::PENDING;
         $m->webhook_url = $webhookUrl;
         $m->save();
@@ -51,7 +50,7 @@ final class EloquentRecipeRequestRepository implements RecipeRequestRepository
     public function markProcessing(string $id): void
     {
         RequestModel::query()->whereKey($id)->update([
-            'status' => RecipeRequestStatus::PROCESSING->value
+            'status' => RecipeRequestStatus::PROCESSING->value,
         ]);
     }
 
@@ -89,8 +88,18 @@ final class EloquentRecipeRequestRepository implements RecipeRequestRepository
      */
     public function findCompletedByIngredients(string $rawIngredientsCsv): ?RequestEntity
     {
-        $hash = IngredientsHelper::hash($rawIngredientsCsv);
+        return $this->findCompletedByHash(
+            IngredientsHelper::hash($rawIngredientsCsv)
+        );
+    }
 
+    /**
+     * @throws \Exception
+     * @param string $hash
+     * @return RequestEntity|null
+     */
+    public function findCompletedByHash(string $hash): ?RequestEntity
+    {
         $m = RequestModel::query()
             ->where('ingredients_hash', $hash)
             ->where('status', RecipeRequestStatus::COMPLETED->value)
@@ -149,7 +158,7 @@ final class EloquentRecipeRequestRepository implements RecipeRequestRepository
      */
     private function toEntity(RequestModel $m): RequestEntity
     {
-        return RequestEntity::create(
+        return new RequestEntity(
             id: (string) $m->id,
             ingredientsCsv: (string) $m->ingredients_csv,
             ingredientsHash: (string) $m->ingredients_hash,

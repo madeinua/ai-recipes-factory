@@ -24,8 +24,9 @@ final class GenerateRecipeJob implements ShouldQueue
     /**
      * @param string $requestId
      */
-    public function __construct(public string $requestId)
-    {
+    public function __construct(
+        public string $requestId
+    ) {
     }
 
     /**
@@ -40,11 +41,15 @@ final class GenerateRecipeJob implements ShouldQueue
         RecipeRepository $recipes,
         AiRecipeGenerator $ai,
     ): void {
+
         $req = $requests->findById($this->requestId);
+
+        // Nothing to process
         if (!$req || $req->status !== RecipeRequestStatus::PENDING) {
             return;
         }
 
+        // Similar request already completed (by ingredients)
         $existing = $requests->findCompletedByIngredients($req->ingredientsCsv);
         if ($existing && $existing->recipeId) {
             $requests->markAllByHashCompleted($req->ingredientsHash, $existing->recipeId);
@@ -59,7 +64,7 @@ final class GenerateRecipeJob implements ShouldQueue
             );
 
             $now = new \DateTimeImmutable();
-            $recipe = RecipeEntity::create(
+            $recipe = new RecipeEntity(
                 id: (string) Str::uuid(),
                 title: $gen['title'],
                 excerpt: $gen['excerpt'],

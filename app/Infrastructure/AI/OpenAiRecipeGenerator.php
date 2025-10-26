@@ -22,7 +22,6 @@ final class OpenAiRecipeGenerator implements AiRecipeGenerator
         $language = $this->resolveLanguage();
         $system = $this->systemPrompt($language);
         $user = $this->userPrompt($ingredients);
-
         $model = config('openai.recipe_model', 'gpt-4o-mini');
         $temperature = (float) config('openai.temperature', 0.5);
         $maxTokens = (int) config('openai.max_output_tokens', 1200);
@@ -45,7 +44,6 @@ final class OpenAiRecipeGenerator implements AiRecipeGenerator
         ];
 
         $response = OpenAI::chat()->create($params);
-
         if (!isset($response['choices'][0]['message'])) {
             throw new \RuntimeException('OpenAI response missing message.');
         }

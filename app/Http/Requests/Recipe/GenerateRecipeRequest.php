@@ -6,11 +6,9 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class GenerateRecipeRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return true;
-    }
-
+    /**
+     * @return array[]
+     */
     public function rules(): array
     {
         return [

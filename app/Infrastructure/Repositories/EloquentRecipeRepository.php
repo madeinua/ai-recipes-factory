@@ -3,10 +3,11 @@
 namespace App\Infrastructure\Repositories;
 
 use App\Domain\Recipe\Entities\Recipe as RecipeEntity;
+use App\Domain\Recipe\Repositories\RecipeRepository;
 use App\Domain\Recipe\ValueObjects\Ingredient;
 use App\Models\Recipe as RecipeModel;
 
-final class EloquentRecipeRepository implements \App\Domain\Recipe\Repositories\RecipeRepository
+final class EloquentRecipeRepository implements RecipeRepository
 {
     /**
      * @param string $id
@@ -48,7 +49,7 @@ final class EloquentRecipeRepository implements \App\Domain\Recipe\Repositories\
      */
     private function toEntity(RecipeModel $m): RecipeEntity
     {
-        return RecipeEntity::create(
+        return new RecipeEntity(
             id: $m->id,
             title: $m->title,
             excerpt: $m->excerpt,

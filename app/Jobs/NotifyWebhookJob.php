@@ -31,6 +31,10 @@ final class NotifyWebhookJob implements ShouldQueue
     ) {
     }
 
+    /**
+     * @throws \Throwable
+     * @return void
+     */
     public function handle(): void
     {
         try {
@@ -43,7 +47,6 @@ final class NotifyWebhookJob implements ShouldQueue
                     'recipe_id'  => $this->recipeId,
                     'timestamp'  => now()->toIso8601String(),
                 ]);
-
         } catch (\Throwable $e) {
             Log::warning('Webhook notify failed', [
                 'url'       => $this->url,

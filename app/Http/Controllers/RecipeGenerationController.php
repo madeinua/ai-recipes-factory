@@ -30,7 +30,8 @@ final class RecipeGenerationController extends Controller
                 $webhookUrl = $request->validated()['webhook_url'] ?? null;
                 $requestId = $requests->createPending($ingredientsCsv, $webhookUrl);
 
-                $completed = $requests->findCompletedByIngredients($ingredientsCsv);
+                // Find recipe with the same ingredients
+                $completed = $requests->findCompletedByHash($hash);
                 if ($completed && $completed->recipeId) {
                     $requests->markCompleted($requestId, $completed->recipeId);
 
@@ -42,6 +43,7 @@ final class RecipeGenerationController extends Controller
                     ], 202);
                 }
 
+                // Check for active requests with the same ingredients - and return without creating a new job
                 if ($requests->existsActiveByHash($hash, $requestId)) {
                     return response()->json([
                         'requestId' => $requestId,
@@ -88,6 +90,7 @@ final class RecipeGenerationController extends Controller
 
         if ($req->status === RecipeRequestStatus::COMPLETED && $req->recipeId) {
             $recipe = $recipes->findById($req->recipeId);
+
             return response()->json([
                 'id'     => $req->id,
                 'status' => $req->status->value,
