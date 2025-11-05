@@ -191,15 +191,40 @@ If `webhook_url` is provided in the generate request, the service will POST:
 
 ---
 
+## Running locally
+
+### Prerequisites
+
+- **Docker** and **Docker Compose** installed.
+- Copy `.env.example` to `.env` and adjust settings if needed.
+
+```bash
+sail up -d
+```
+
+---
+
 ## Testing
 
 The suite uses **PHPUnit** with Laravel testing utilities.
 
 **Run tests**
 
+Recommended:
+
+```bash
+npm run test
 ```
+
+Alternatively, directly via Artisan or PHPUnit:
+
+```bash
 php artisan test
-# or
+```
+
+or
+
+```bash
 vendor/bin/phpunit
 ```
 

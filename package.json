@@ -5,7 +5,8 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "dev:refresh": "composer dump-autoload -o && php artisan optimize:clear && php artisan queue:restart"
+        "dev:refresh": "composer dump-autoload -o && CACHE_STORE=file php artisan optimize:clear && CACHE_STORE=file QUEUE_CONNECTION=sync php artisan queue:restart",
+        "test": "npm run dev:refresh && php artisan test"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

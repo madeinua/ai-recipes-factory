@@ -35,6 +35,10 @@ final readonly class Ingredient
             throw new \InvalidArgumentException('Ingredient value must be a finite number.');
         }
 
+        if ($this->value < 0) {
+            throw new \InvalidArgumentException('Ingredient value cannot be negative.');
+        }
+
         if ($this->measure !== '' && mb_strlen($this->measure) > 16) {
             throw new \InvalidArgumentException('Ingredient measure too long.');
         }

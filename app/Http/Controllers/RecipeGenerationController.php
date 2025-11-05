@@ -63,9 +63,26 @@ final class RecipeGenerationController extends Controller
                 ], 202);
             });
         } catch (LockTimeoutException) {
+            // Lock timeout means another process is handling the same ingredients
+            // Check for existing requests instead of creating unnecessary duplicates
             $webhookUrl = $request->validated()['webhook_url'] ?? null;
-            $requestId = $requests->createPending($ingredientsCsv, $webhookUrl);
 
+            // First check if a completed recipe already exists
+            $completed = $requests->findCompletedByHash($hash);
+            $requestId = $requests->createPending($ingredientsCsv, $webhookUrl);
+            if ($completed && $completed->recipeId) {
+                $requests->markCompleted($requestId, $completed->recipeId);
+
+                return response()->json([
+                    'requestId' => $requestId,
+                    'status'    => RecipeRequestStatus::COMPLETED->value,
+                    'deduped'   => true,
+                    'location'  => route('recipes.requests.show', ['id' => $requestId]),
+                ], 202);
+            }
+
+            // Otherwise, create pending request without dispatching job
+            // (another process is already working on it)
             return response()->json([
                 'requestId' => $requestId,
                 'status'    => RecipeRequestStatus::PENDING->value,

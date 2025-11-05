@@ -49,7 +49,7 @@ final class OpenAiRecipeGenerator implements AiRecipeGenerator
         }
 
         $recipeData = json_decode($response['choices'][0]['message']['content'], true);
-        if (!$recipeData) {
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($recipeData)) {
             throw new \RuntimeException('OpenAI returned invalid JSON: ' . json_last_error_msg());
         }
 
