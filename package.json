@@ -9,7 +9,8 @@
         "dev:refresh": "./vendor/bin/sail composer dump-autoload -o && ./vendor/bin/sail artisan optimize:clear && ./vendor/bin/sail artisan queue:restart",
         "test": "npm run dev:refresh && ./vendor/bin/sail artisan test",
         "test:fast": "./vendor/bin/sail artisan test",
-        "up": "./vendor/bin/sail up -d"
+        "up": "./vendor/bin/sail up -d",
+        "db:truncate": "./vendor/bin/sail artisan db:truncate"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
