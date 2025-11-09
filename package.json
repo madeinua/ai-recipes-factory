@@ -10,6 +10,8 @@
         "test": "npm run dev:refresh && ./vendor/bin/sail artisan test",
         "test:fast": "./vendor/bin/sail artisan test",
         "up": "./vendor/bin/sail up -d",
+        "restart": "./vendor/bin/sail restart",
+        "stop": "./vendor/bin/sail down",
         "db:truncate": "./vendor/bin/sail artisan db:truncate"
     },
     "devDependencies": {
@@ -26,6 +28,7 @@
     "dependencies": {
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
+        "react-router-dom": "^7.1.3",
         "typescript": "^5.9.3"
     }
 }

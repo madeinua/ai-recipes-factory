@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import type {Recipe} from '../types/recipe';
 
 interface RecipeDisplayProps {
@@ -6,10 +7,24 @@ interface RecipeDisplayProps {
 }
 
 function RecipeDisplay({recipe, onGenerateNew}: RecipeDisplayProps) {
+    const [copied, setCopied] = useState(false);
+
+    const handleShare = async () => {
+        const url = window.location.href;
+
+        try {
+            await navigator.clipboard.writeText(url);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy URL:', err);
+        }
+    };
+
     return (
         <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="flex justify-between items-start mb-6">
-                <div>
+                <div className="flex-1">
                     <h1 className="text-4xl font-bold text-gray-900 mb-2">
                         {recipe.title}
                     </h1>
@@ -17,12 +32,34 @@ function RecipeDisplay({recipe, onGenerateNew}: RecipeDisplayProps) {
                         {recipe.excerpt}
                     </p>
                 </div>
-                <button
-                    onClick={onGenerateNew}
-                    className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer transition-colors"
-                >
-                    New Recipe
-                </button>
+                <div className="flex gap-2 ml-4">
+                    <button
+                        onClick={handleShare}
+                        className="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 cursor-pointer transition-colors flex items-center gap-2"
+                    >
+                        {copied ? (
+                            <>
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Copied!
+                            </>
+                        ) : (
+                            <>
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                                </svg>
+                                Share
+                            </>
+                        )}
+                    </button>
+                    <button
+                        onClick={onGenerateNew}
+                        className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer transition-colors"
+                    >
+                        New Recipe
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
