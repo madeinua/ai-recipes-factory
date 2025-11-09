@@ -1,17 +1,19 @@
-# AI Recipes Factory (Laravel 12, MySQL, Redis, Docker)
+# AI Recipes Factory (Laravel 12 + React, MySQL, Redis, Docker)
 
-Queue-driven micro-backend that accepts a list of ingredients, generates a recipe asynchronously (AI or Fake), stores it, and returns results via polling or webhook.
+Queue-driven full-stack application that accepts a list of ingredients, generates recipes asynchronously using AI, and displays them in a beautiful React interface.
 
-- **Framework:** Laravel 12 (PHP 8.3)
-- **Infra:** MySQL 8, Redis 7, Docker Compose
+- **Backend:** Laravel 12 (PHP 8.3)
+- **Frontend:** React 19 + TypeScript + Vite + Tailwind CSS v4
+- **Infra:** MySQL 8, Redis 7, Docker Compose (Laravel Sail)
 - **Queue:** Laravel queues (default + `webhooks`)
 - **Security posture:** internal service behind TLS / network controls; **no users / no Sanctum**
 - **Tests:** Feature tests; AI mocked to **FakeAiRecipeGenerator** in tests
 
 ---
 
-## ✨ Features
+## Features
 
+### Backend
 - **Async API**: `POST /recipes/generate` → returns `requestId` (202). Poll or receive a **webhook** when done.
 - **Deduplication**: canonicalizes + hashes ingredient CSV; avoids duplicate processing; instant completion for already computed inputs.
 - **Replay-safe enqueue**: short critical section guarded by cache lock.
@@ -21,9 +23,18 @@ Queue-driven micro-backend that accepts a list of ingredients, generates a recip
 - **Swappable AI provider**: `AiRecipeGenerator` interface → Fake or OpenAI-backed implementation.
 - **No user model / auth**: designed as an internal microservice.
 
+### Frontend
+- **React 19 + TypeScript**: Modern, type-safe component architecture.
+- **Beautiful UI**: Tailwind CSS v4 with gradient backgrounds and smooth animations.
+- **Smart polling**: Automatic status updates with configurable intervals.
+- **Example ingredients**: Quick-start buttons with pre-filled ingredient combinations.
+- **Responsive design**: Works seamlessly on mobile and desktop.
+- **Error handling**: Graceful error states with retry functionality.
+- **Real-time feedback**: Loading states for PENDING → PROCESSING → COMPLETED.
+
 ---
 
-## 🧭 API
+## API
 
 ### 1) Generate Recipe (async)
 
@@ -172,7 +183,64 @@ Queue-driven micro-backend that accepts a list of ingredients, generates a recip
 
 ---
 
-## 🔔 Webhooks
+## Frontend Architecture
+
+The frontend is built with **React 19**, **TypeScript**, and **Tailwind CSS v4**, providing a modern and type-safe user interface.
+
+### Project Structure
+
+```
+resources/js/
+├── components/
+│   ├── App.tsx              # Main app with state management
+│   ├── RecipeForm.tsx       # Ingredient input form
+│   ├── RecipeDisplay.tsx    # Recipe display with ingredients & instructions
+│   └── LoadingStatus.tsx    # Loading states and animations
+├── services/
+│   └── recipeApi.ts         # API client with polling logic
+├── types/
+│   └── recipe.ts            # TypeScript interfaces
+└── app.tsx                  # App entry point
+```
+
+### Key Components
+
+**RecipeForm**
+- Ingredient input with validation (2-3000 characters)
+- Pre-filled example ingredient combinations
+- Real-time validation feedback
+
+**RecipeDisplay**
+- Beautiful card layout with title, excerpt, and metadata
+- Visual indicators for servings, prep time, and cook time
+- Organized ingredients list with checkmarks
+- Step-by-step numbered instructions
+- "New Recipe" button to start over
+
+**LoadingStatus**
+- Animated loading states for PENDING/PROCESSING
+- Smooth transitions between states
+- Visual feedback with spinners and bouncing dots
+
+**API Service**
+- `generateRecipe()` - Submit ingredients
+- `pollForRecipe()` - Smart polling with callbacks
+- Configurable polling interval (default: 2s) and max attempts (default: 60)
+
+### State Management
+
+Uses React's `useState` with a discriminated union type for clean state transitions:
+```typescript
+type AppState =
+    | { type: 'form' }
+    | { type: 'loading'; status: RecipeRequestStatus }
+    | { type: 'recipe'; recipe: Recipe }
+    | { type: 'error'; message: string };
+```
+
+---
+
+## Webhooks
 
 If `webhook_url` is provided in the generate request, the service will POST:
 
@@ -194,11 +262,52 @@ If `webhook_url` is provided in the generate request, the service will POST:
 
 ### Prerequisites
 
-- **Docker** and **Docker Compose** installed.
-- Copy `.env.example` to `.env` and adjust settings if needed.
+- **Docker** and **Docker Compose** installed
+- **Node.js** (v18 or higher) and **npm**
+- Copy `.env.example` to `.env` and adjust settings if needed
+
+### Quick Start (Full Stack)
 
 ```bash
-sail up -d
+# Install dependencies
+npm install
+composer install
+
+# Start Docker containers (MySQL, Redis, Queue Worker)
+npm run up
+
+# In a separate terminal, start Vite dev server
+npm run dev
+```
+
+Your application will be available at:
+- **Frontend (Vite)**: http://localhost:5173
+- **Backend API**: http://localhost/api/v1
+- **Mailpit UI**: http://localhost:8025
+
+### Available npm Scripts
+
+**Docker Management:**
+- `npm run up` - Start all containers in detached mode
+
+**Development:**
+- `npm run dev` - Start Vite development server with HMR
+- `npm run build` - Build frontend for production
+
+**Testing:**
+- `npm run test` - Run backend tests (includes cache clear)
+
+### Alternative: Direct Sail Commands
+
+```bash
+# Start all services
+./vendor/bin/sail up -d
+
+# Start Vite dev server
+./vendor/bin/sail npm run dev
+
+# Run backend tests
+./vendor/bin/sail artisan test
 ```
 
 ---
@@ -231,11 +340,49 @@ vendor/bin/phpunit
 
 ## Troubleshooting
 
-- **`This cache store does not support tagging/locks`**  
+### Backend Issues
+
+- **`This cache store does not support tagging/locks`**
   Set `CACHE_STORE=redis` and ensure Redis is running and reachable.
-- **Jobs never run**  
-  Start a worker: `php artisan queue:work --queue=default,webhooks`.
-- **429 Too Many Requests**  
+- **Jobs never run**
+  Start a worker: `php artisan queue:work --queue=default,webhooks` or ensure the queue container is running.
+- **429 Too Many Requests**
   You hit throttles; slow down or raise limits in `AppServiceProvider`.
-- **Webhook timeouts**  
+- **Webhook timeouts**
   Target must accept POST JSON; service retries 3 times with 30s backoff and logs failures.
+
+### Frontend Issues
+
+- **Vite port already in use**
+  Change `VITE_PORT` in `.env` (default: 5173).
+- **API calls failing**
+  Ensure the backend is running on port 80 and `APP_URL` in `.env` is correct.
+- **Polling timeout**
+  Recipe generation takes too long; check queue worker logs: `./vendor/bin/sail logs queue`.
+- **TypeScript errors**
+  Run `npm install` to ensure dependencies are up to date.
+- **Styles not loading**
+  Tailwind CSS v4 uses Vite plugin; restart Vite dev server after config changes.
+
+---
+
+## Technology Stack
+
+### Backend
+- **Laravel 12** - PHP framework with robust queue and cache systems
+- **MySQL 8** - Primary database for recipes and requests
+- **Redis 7** - Cache and queue backend
+- **Laravel Sail** - Docker development environment
+- **PHPUnit** - Testing framework
+
+### Frontend
+- **React 19** - UI library with latest features
+- **TypeScript** - Type-safe JavaScript
+- **Vite** - Fast build tool with HMR
+- **Tailwind CSS v4** - Utility-first CSS framework
+- **Axios** - HTTP client for API calls
+
+### DevOps
+- **Docker Compose** - Multi-container orchestration
+- **Mailpit** - Email testing tool
+- **Laravel Queues** - Background job processing
