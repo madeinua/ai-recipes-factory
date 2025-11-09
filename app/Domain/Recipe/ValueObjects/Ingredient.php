@@ -39,8 +39,8 @@ final readonly class Ingredient
             throw new \InvalidArgumentException('Ingredient value cannot be negative.');
         }
 
-        if ($this->measure !== '' && mb_strlen($this->measure) > 16) {
-            throw new \InvalidArgumentException('Ingredient measure too long.');
+        if ($this->measure !== '' && mb_strlen($this->measure) > 50) {
+            throw new \InvalidArgumentException('Ingredient measure too long');
         }
     }
 

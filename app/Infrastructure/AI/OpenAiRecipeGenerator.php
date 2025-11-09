@@ -69,7 +69,7 @@ final class OpenAiRecipeGenerator implements AiRecipeGenerator
 
         $outputIngredients = [];
         foreach (($recipeData['ingredients'] ?? []) as $name => $qty) {
-            [$value, $measure] = $this->parseQuantity((string) $qty);
+            [$value, $measure] = $this->parseMeasure((string) $qty);
             $outputIngredients[] = new Ingredient(lcfirst($name), $value, (string) $measure);
         }
 
@@ -118,12 +118,12 @@ The recipe must be written in this language: {$language}.
 If an ingredient is too broad (e.g., "Fleisch"), you may pick a specific type that fits best.
 Prefer using all provided ingredients; you may drop up to 33% if it improves the recipe. You may add minor extras but keep the provided ones as the main focus.
 Aim for a healthy recipe.
-Quantities must be for two people.
+Measures must be for two people.
 
 The JSON must contain ONLY: "success", "title", "ingredients", "excerpt", "instructions", "preparation_time", "cook_time".
 - "success": boolean.
 - "title": max 15 words.
-- "ingredients": object { name -> quantity string }, listed roughly by predominance; example values: "250 g", "1 EL", "2 Zehen", "300 ml", "" if seasoning.
+- "ingredients": object { name -> measure string }, listed roughly by predominance; example values: "250 g", "1 EL", "2 Zehen", "300 ml", "" if seasoning. The measure string must not be longer than 45 characters.
 - "excerpt": 15–50 words.
 - "instructions": array of step strings (≤20).
 - "preparation_time": integer minutes.
@@ -204,10 +204,10 @@ END;
     }
 
     /**
-     * Parse a quantity string like "250 g", "1 EL", "2 Zehen", "300 ml", or "".
+     * Parse a measure string like "250 g", "1 EL", "2 Zehen", "300 ml", or "".
      * Returns [value(float), measure(string)]
      */
-    private function parseQuantity(string $q): array
+    private function parseMeasure(string $q): array
     {
         $q = trim($q);
         if ($q === '') {
