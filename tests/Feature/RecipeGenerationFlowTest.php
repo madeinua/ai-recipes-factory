@@ -33,6 +33,6 @@ class RecipeGenerationFlowTest extends TestCase
         // #4 Read the recipe directly
         $this->getJson("/api/v1/recipes/{$recipeId}")
             ->assertOk()
-            ->assertJsonPath('id', $recipeId);
+            ->assertJsonPath('data.id', $recipeId);
     }
 }

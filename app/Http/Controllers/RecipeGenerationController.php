@@ -7,6 +7,7 @@ use App\Domain\Recipe\Repositories\RecipeRepository;
 use App\Domain\Recipe\Repositories\RecipeRequestRepository;
 use App\Domain\Recipe\Support\IngredientsHelper;
 use App\Http\Requests\Recipe\GenerateRecipeRequest;
+use App\Http\Resources\RecipeResource;
 use App\Jobs\GenerateRecipeJob;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Http\JsonResponse;
@@ -111,7 +112,7 @@ final class RecipeGenerationController extends Controller
             return response()->json([
                 'id'     => $req->id,
                 'status' => $req->status->value,
-                'recipe' => $recipe?->toArray(),
+                'recipe' => $recipe ? RecipeResource::make($recipe)->resolve() : null,
             ]);
         }
 

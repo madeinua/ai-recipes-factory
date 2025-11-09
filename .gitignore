@@ -8,6 +8,7 @@ NUL
 .phpunit.result.cache
 /.fleet
 /.idea
+/.claude
 /.nova
 /.phpunit.cache
 /.vscode

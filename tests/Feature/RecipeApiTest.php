@@ -26,6 +26,6 @@ class RecipeApiTest extends TestCase
 
         $this->getJson('/api/v1/recipes/' . $recipeId)
             ->assertOk()
-            ->assertJsonPath('id', $recipeId);
+            ->assertJsonPath('data.id', $recipeId);
     }
 }

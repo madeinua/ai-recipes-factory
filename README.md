@@ -17,6 +17,7 @@ Queue-driven micro-backend that accepts a list of ingredients, generates a recip
 - **Replay-safe enqueue**: short critical section guarded by cache lock.
 - **Rate limiting**: global API + stricter per-endpoint limits.
 - **Domain-first design** (DDD-ish): entities, value objects, repositories, services separated from infrastructure.
+- **API Resources**: Clean transformation layer using Laravel Resources to control API responses.
 - **Swappable AI provider**: `AiRecipeGenerator` interface → Fake or OpenAI-backed implementation.
 - **No user model / auth**: designed as an internal microservice.
 
@@ -115,9 +116,7 @@ Queue-driven micro-backend that accepts a list of ingredients, generates a recip
                 "value": 100,
                 "measure": "mg"
             }
-        ],
-        "createdAt": "2025-10-26T12:00:00+00:00",
-        "updatedAt": "2025-10-26T12:00:00+00:00"
+        ]
     }
 }
 ```
@@ -142,24 +141,24 @@ Queue-driven micro-backend that accepts a list of ingredients, generates a recip
 
 ```json
 {
-    "id": "uuid",
-    "title": "Tomato Basil Pasta",
-    "excerpt": "Auto-generated demo recipe.",
-    "instructions": [
-        "..."
-    ],
-    "numberOfPersons": 2,
-    "timeToCook": 15,
-    "timeToPrepare": 8,
-    "ingredients": [
-        {
-            "name": "tomato",
-            "value": 100,
-            "measure": "mg"
-        }
-    ],
-    "createdAt": "...",
-    "updatedAt": "..."
+    "data": {
+        "id": "uuid",
+        "title": "Tomato Basil Pasta",
+        "excerpt": "Auto-generated demo recipe.",
+        "instructions": [
+            "..."
+        ],
+        "numberOfPersons": 2,
+        "timeToCook": 15,
+        "timeToPrepare": 8,
+        "ingredients": [
+            {
+                "name": "tomato",
+                "value": 100,
+                "measure": "mg"
+            }
+        ]
+    }
 }
 ```
 
