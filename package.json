@@ -12,7 +12,8 @@
         "up": "./vendor/bin/sail up -d",
         "restart": "./vendor/bin/sail restart",
         "stop": "./vendor/bin/sail down",
-        "db:truncate": "./vendor/bin/sail artisan db:truncate"
+        "db:truncate": "./vendor/bin/sail artisan db:truncate",
+        "queue:logs": "./vendor/bin/sail logs -f queue"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
