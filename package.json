@@ -3,10 +3,8 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "./vendor/bin/sail npm run dev:sail",
-        "dev:sail": "vite dev",
-        "build": "./vendor/bin/sail npm run build:sail",
-        "build:sail": "vite build",
+        "dev": "vite dev",
+        "build": "vite build",
         "sail": "./vendor/bin/sail",
         "dev:refresh": "./vendor/bin/sail composer dump-autoload -o && ./vendor/bin/sail artisan optimize:clear && ./vendor/bin/sail artisan queue:restart",
         "test": "npm run dev:refresh && ./vendor/bin/sail artisan test",

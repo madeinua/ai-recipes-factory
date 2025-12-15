@@ -282,10 +282,10 @@ If `webhook_url` is provided in the generate request, the service will POST:
 ./vendor/bin/sail artisan migrate
 
 # Start Vite dev server (for development)
-./vendor/bin/sail npm run dev
+npm run dev
 
 # OR build for production
-./vendor/bin/sail npm run build
+npm run build
 ```
 
 **Note:** To terminate the development server:
@@ -299,6 +299,8 @@ Your application will be available at:
 
 ### Available npm Scripts
 
+All npm scripts can be run directly from the host machine (no `./vendor/bin/sail` prefix needed).
+
 **Docker Management:**
 - `npm run up` - Start all containers in detached mode
 
@@ -308,14 +310,20 @@ Your application will be available at:
 
 **Testing:**
 - `npm run test` - Run backend tests (includes cache clear)
+- `npm run test:fast` - Run backend tests without cache clear
 
-### Alternative: Direct Sail Commands
+### Alternative: Running Commands Inside Sail Container
+
+If you prefer to run npm/node commands inside the Docker container:
 
 ```bash
 # Start all services
 ./vendor/bin/sail up -d
 
-# Start Vite dev server
+# Install npm packages
+./vendor/bin/sail npm install
+
+# Start Vite dev server in container
 ./vendor/bin/sail npm run dev
 
 # Run backend tests
