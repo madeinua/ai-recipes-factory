@@ -269,16 +269,28 @@ If `webhook_url` is provided in the generate request, the service will POST:
 ### Quick Start (Full Stack)
 
 ```bash
-# Install dependencies
-npm install
-composer install
-
 # Start Docker containers (MySQL, Redis, Queue Worker)
-npm run up
+./vendor/bin/sail up -d
 
-# In a separate terminal, start Vite dev server
-npm run dev
+# Install dependencies
+./vendor/bin/sail npm install
+
+# Generate application key
+./vendor/bin/sail artisan key:generate
+
+# Run database migrations
+./vendor/bin/sail artisan migrate
+
+# Start Vite dev server (for development)
+./vendor/bin/sail npm run dev
+
+# OR build for production
+./vendor/bin/sail npm run build
 ```
+
+**Note:** To terminate the development server:
+- **Windows**: Ctrl+C
+- **macOS**: q+Enter
 
 Your application will be available at:
 - **Frontend (Vite)**: http://localhost:5173
